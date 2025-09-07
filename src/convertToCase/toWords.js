@@ -1,32 +1,16 @@
-/**
- * @typedef {'SNAKE' | 'KEBAB' | 'CAMEL' | 'PASCAL' | 'UPPER'} CaseName
- *
- * @param {string} text
- * @param {CaseName} originalCase
- *
- * @returns {string[]}
- */
-function toWords(text, originalCase) {
-  if (['SNAKE', 'KEBAB', 'UPPER'].includes(originalCase)) {
-    return text.split(/[_-]/).map((str) => str.toLowerCase());
+function toWords(input) {
+  if (!input) {
+    return [];
   }
 
-  const words = [];
-  let lastChar = -1;
+  // zamienia np. kebab-case i snake_case na spacje
+  let str = input.replace(/[-_]/g, ' ');
 
-  for (let i = 0; i < text.length; i++) {
-    if (i === text.length - 1 || text[i + 1].toUpperCase() === text[i + 1]) {
-      const word = text.slice(lastChar + 1, i + 1).toLowerCase();
+  // dodaje spacje przed wielkimi literami w camelCase/PascalCase
+  str = str.replace(/([a-z])([A-Z])/g, '$1 $2');
 
-      lastChar = i;
-
-      words.push(word);
-    }
-  }
-
-  return words;
+  // zamienia wszystko na małe litery
+  return str.toLowerCase().split(' ');
 }
 
-module.exports = {
-  toWords,
-};
+module.exports = toWords;
