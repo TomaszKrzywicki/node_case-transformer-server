@@ -10,11 +10,20 @@ function createServer() {
 
       const url = req.url || '/';
       const [path, query] = url.split('?');
-      const text = decodeURIComponent(path.slice(1));
+
+      let text = '';
+      try {
+        text = decodeURIComponent(path.slice(1));
+      } catch {
+        errors.push({
+          message: 'Text is not decodable. Use valid encoding in path.',
+        });
+      }
+
       const params = new URLSearchParams(query);
       const toCase = params.get('toCase');
 
-      if (!text) {
+      if (!text || text.trim() === '') {
         errors.push({
           message:
             'Text to convert is required. Correct request is: ' +
@@ -42,7 +51,6 @@ function createServer() {
         res.statusCode = 400;
         res.statusMessage = 'Bad request';
         res.end(JSON.stringify({ errors }));
-
         return;
       }
 
@@ -62,12 +70,9 @@ function createServer() {
       res.statusCode = 500;
       res.statusMessage = 'Internal Server Error';
       res.setHeader('Content-Type', 'application/json');
-
-      res.end(
-        JSON.stringify({
-          errors: [{ message: err.message }],
-        }),
-      );
+      res.end(JSON.stringify({
+        errors: [{ message: err.message }],
+      }));
     }
   });
 }
