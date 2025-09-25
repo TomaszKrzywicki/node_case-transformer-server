@@ -1,23 +1,16 @@
-const { detectCase } = require('./detectCase');
-const { wordsToCase } = require('./wordsToCase');
+const detectCase = require('./detectCase');
+const toWords = require('./toWords');
+const wordToCase = require('./wordsToCase');
 
-function toWords(input) {
-  return input
-    .replace(/([a-z])([A-Z])/g, '$1 $2')
-    .replace(/[-_]/g, ' ')
-    .split(/\s+/)
-    .filter(Boolean)
-    .map((word) => word.toLowerCase());
-}
-
-function convertToCase(toCase, text) {
-  const words = toWords(text);
+function convertToCase(targetCase, text) {
   const originalCase = detectCase(text);
+  const words = toWords(text, originalCase);
+  const convertedText = wordToCase(words, targetCase);
 
   return {
     originalCase,
-    convertedText: wordsToCase(words, toCase),
+    convertedText,
   };
 }
 
-module.exports = { convertToCase };
+module.exports = convertToCase;

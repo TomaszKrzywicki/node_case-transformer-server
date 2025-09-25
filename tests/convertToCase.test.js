@@ -1,4 +1,4 @@
-const convertToCase = require('../src/convertToCase'); // ✅ import zgodny z module.exports
+const convertToCase = require('../src/convertToCase/convertToCase'); // ✅ import zgodny z module.exports
 
 describe('convertToCase', () => {
   const cases = {

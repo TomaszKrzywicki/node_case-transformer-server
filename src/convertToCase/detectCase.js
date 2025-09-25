@@ -1,25 +1,25 @@
-function detectCase(input) {
-  if (input.includes('_') && input === input.toUpperCase()) {
+function detectCase(text) {
+  if (/^[A-Z_]+$/.test(text)) {
     return 'UPPER';
   }
 
-  if (input.includes('_')) {
+  if (text.includes('_')) {
     return 'SNAKE';
   }
 
-  if (input.includes('-')) {
+  if (text.includes('-')) {
     return 'KEBAB';
   }
 
-  if (/^[a-z][a-zA-Z0-9]*$/.test(input)) {
-    return 'CAMEL';
+  if (/^[A-Z]/.test(text) && /[a-z]/.test(text)) {
+    return 'PASCAL';
   }
 
-  if (/^[A-Z][a-zA-Z0-9]*$/.test(input)) {
-    return 'PASCAL';
+  if (/^[a-z]/.test(text) && /[A-Z]/.test(text)) {
+    return 'CAMEL';
   }
 
   return 'UNKNOWN';
 }
 
-module.exports = { detectCase };
+module.exports = detectCase;

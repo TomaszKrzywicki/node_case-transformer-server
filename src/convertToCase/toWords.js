@@ -1,14 +1,20 @@
-function toWords(text) {
-  if (!text) {
-    return [];
+function toWords(text, caseType) {
+  switch (caseType) {
+    case 'SNAKE':
+    case 'UPPER':
+      return text.toLowerCase().split('_');
+    case 'KEBAB':
+      return text.toLowerCase().split('-');
+    case 'CAMEL':
+    case 'PASCAL':
+      return text
+        .replace(/([A-Z])/g, ' $1')
+        .trim()
+        .split(' ')
+        .map((w) => w.toLowerCase());
+    default:
+      return [text];
   }
-
-  return text
-    .replace(/([a-z])([A-Z])/g, '$1 $2') // camelCase → camel Case
-    .replace(/[_-]/g, ' ') // snake_case / kebab-case → spacje
-    .split(' ') // podział po spacji
-    .filter(Boolean) // usunięcie pustych
-    .map((word) => word.toLowerCase());
 }
 
 module.exports = toWords;

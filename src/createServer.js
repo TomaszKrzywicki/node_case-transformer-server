@@ -1,83 +1,74 @@
 const http = require('http');
-const { convertToCase } = require('./convertToCase/convertToCase');
+const { convertToCase } = require('./convertToCase');
+
+const SUPPORTED_CASES = ['SNAKE', 'KEBAB', 'CAMEL', 'PASCAL', 'UPPER'];
 
 function createServer() {
   return http.createServer((req, res) => {
-    res.setHeader('Content-Type', 'application/json');
+    try {
+      const errors = [];
 
-    const errors = [];
+      const url = req.url || '/';
+      const [path, query] = url.split('?');
+      const text = decodeURIComponent(path.slice(1));
+      const params = new URLSearchParams(query);
+      const toCase = params.get('toCase');
 
-    if (!req.url) {
-      res.statusCode = 400;
-      res.statusMessage = 'Bad request';
+      if (!text) {
+        errors.push({
+          message:
+            'Text to convert is required. Correct request is: ' +
+            '"/<TEXT_TO_CONVERT>?toCase=<CASE_NAME>".',
+        });
+      }
 
-      res.end(
-        JSON.stringify({
-          errors: [
-            {
-              message:
-                'Text to convert is required. Correct request is: ' +
-                '"/<TEXT_TO_CONVERT>?toCase=<CASE_NAME>".',
-            },
-          ],
-        }),
-      );
-
-      return;
-    }
-
-    const [path, queryString] = req.url.split('?');
-    const textToConvert = path.slice(1);
-    const params = new URLSearchParams(queryString);
-    const toCase = params.get('toCase');
-
-    if (!textToConvert) {
-      errors.push({
-        message:
-          'Text to convert is required. Correct request is: ' +
-          '"/<TEXT_TO_CONVERT>?toCase=<CASE_NAME>".',
-      });
-    }
-
-    if (!toCase) {
-      errors.push({
-        message:
-          '"toCase" query param is required. Correct request is: ' +
-          '"/<TEXT_TO_CONVERT>?toCase=<CASE_NAME>".',
-      });
-    } else {
-      const supportedCases = ['SNAKE', 'KEBAB', 'CAMEL', 'PASCAL', 'UPPER'];
-
-      if (!supportedCases.includes(toCase)) {
+      if (!toCase) {
+        errors.push({
+          message:
+            '"toCase" query param is required. Correct request is: ' +
+            '"/<TEXT_TO_CONVERT>?toCase=<CASE_NAME>".',
+        });
+      } else if (!SUPPORTED_CASES.includes(toCase)) {
         errors.push({
           message:
             'This case is not supported. Available cases: ' +
             'SNAKE, KEBAB, CAMEL, PASCAL, UPPER.',
         });
       }
-    }
 
-    if (errors.length > 0) {
-      res.statusCode = 400;
-      res.statusMessage = 'Bad request';
-      res.end(JSON.stringify({ errors }));
+      res.setHeader('Content-Type', 'application/json');
 
-      return;
-    }
+      if (errors.length > 0) {
+        res.statusCode = 400;
+        res.statusMessage = 'Bad request';
+        res.end(JSON.stringify({ errors }));
 
-    const result = convertToCase(toCase, textToConvert);
+        return;
+      }
 
-    res.statusCode = 200;
-    res.statusMessage = 'OK';
+      const result = convertToCase(toCase, text);
 
-    res.end(
-      JSON.stringify({
+      const responseBody = {
         originalCase: result.originalCase,
         targetCase: toCase,
-        originalText: textToConvert,
+        originalText: text,
         convertedText: result.convertedText,
-      }),
-    );
+      };
+
+      res.statusCode = 200;
+      res.statusMessage = 'OK';
+      res.end(JSON.stringify(responseBody));
+    } catch (err) {
+      res.statusCode = 500;
+      res.statusMessage = 'Internal Server Error';
+      res.setHeader('Content-Type', 'application/json');
+
+      res.end(
+        JSON.stringify({
+          errors: [{ message: err.message }],
+        }),
+      );
+    }
   });
 }
 
