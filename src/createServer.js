@@ -12,6 +12,7 @@ function createServer() {
       const [path, query] = url.split('?');
 
       let text = '';
+
       try {
         text = decodeURIComponent(path.slice(1));
       } catch {
@@ -51,6 +52,7 @@ function createServer() {
         res.statusCode = 400;
         res.statusMessage = 'Bad request';
         res.end(JSON.stringify({ errors }));
+
         return;
       }
 
@@ -70,9 +72,12 @@ function createServer() {
       res.statusCode = 500;
       res.statusMessage = 'Internal Server Error';
       res.setHeader('Content-Type', 'application/json');
-      res.end(JSON.stringify({
-        errors: [{ message: err.message }],
-      }));
+
+      res.end(
+        JSON.stringify({
+          errors: [{ message: err.message }],
+        }),
+      );
     }
   });
 }
