@@ -1,4 +1,6 @@
-function toWords(text, caseType) {
+function toWords(input, caseType) {
+  const text = typeof input === 'string' ? input : String(input);
+
   switch (caseType) {
     case 'SNAKE':
     case 'UPPER':
@@ -13,7 +15,7 @@ function toWords(text, caseType) {
         .split(' ')
         .map((w) => w.toLowerCase());
     default:
-      return [text];
+      return [String(text)];
   }
 }
 

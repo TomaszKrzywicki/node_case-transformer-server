@@ -1,4 +1,8 @@
 function detectCase(text) {
+  if (typeof text !== 'string') {
+    return 'UNKNOWN';
+  }
+
   if (/^[A-Z_]+$/.test(text)) {
     return 'UPPER';
   }

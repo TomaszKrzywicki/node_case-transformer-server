@@ -16,9 +16,7 @@ function createServer() {
       try {
         text = decodeURIComponent(path.slice(1));
       } catch {
-        errors.push({
-          message: 'Text is not decodable. Use valid encoding in path.',
-        });
+        text = '';
       }
 
       const params = new URLSearchParams(query);
