@@ -1,30 +1,23 @@
-/**
- * Funkcja konwertująca tekst do różnych formatów case.
- * Obsługiwane formaty: SNAKE, CAMEL, KEBAB, PASCAL, UPPER
- */
+const { detectCase } = require('./detectCase');
+const { wordsToCase } = require('./wordsToCase');
 
-function convertToCase(toCase, text) {
-  switch (toCase) {
-    case 'SNAKE':
-      return text
-        .replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)
-        .replace(/^_/, '');
-    case 'CAMEL':
-      return text.replace(/[_-]([a-zA-Z])/g, (_, c) => c.toUpperCase());
-    case 'KEBAB':
-      return text
-        .replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`)
-        .replace(/^-/, '');
-    case 'PASCAL':
-      const camel = text.replace(/[_-]([a-zA-Z])/g, (_, c) => c.toUpperCase());
-
-      return camel.charAt(0).toUpperCase() + camel.slice(1);
-    case 'UPPER':
-      return text.toUpperCase();
-    default:
-      return text;
-  }
+function toWords(input) {
+  return input
+    .replace(/([a-z])([A-Z])/g, '$1 $2')
+    .replace(/[-_]/g, ' ')
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((word) => word.toLowerCase());
 }
 
-// Eksport dla Node.js
+function convertToCase(toCase, text) {
+  const words = toWords(text);
+  const originalCase = detectCase(text);
+
+  return {
+    originalCase,
+    convertedText: wordsToCase(words, toCase),
+  };
+}
+
 module.exports = { convertToCase };

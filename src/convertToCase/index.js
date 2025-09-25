@@ -1,11 +1,10 @@
-const toWords = require('./toWords');
-const wordsToCase = require('./wordsToCase');
-// const { detectCase } = require('./detectCase') // odkomentuj jeśli potrzebne
+const { createServer } = require('./createServer');
 
-function convertToCase(input, targetCase) {
-  const words = toWords(input);
+const PORT = process.env.PORT || 3000;
 
-  return wordsToCase(words, targetCase);
-}
+const server = createServer();
 
-module.exports = convertToCase;
+server.listen(PORT, () => {
+  // eslint-disable-next-line no-console
+  console.log(`Server is running at http://localhost:${PORT}`);
+});

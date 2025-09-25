@@ -1,16 +1,14 @@
-function toWords(input) {
-  if (!input) {
+function toWords(text) {
+  if (!text) {
     return [];
   }
 
-  // zamienia np. kebab-case i snake_case na spacje
-  let str = input.replace(/[-_]/g, ' ');
-
-  // dodaje spacje przed wielkimi literami w camelCase/PascalCase
-  str = str.replace(/([a-z])([A-Z])/g, '$1 $2');
-
-  // zamienia wszystko na małe litery
-  return str.toLowerCase().split(' ');
+  return text
+    .replace(/([a-z])([A-Z])/g, '$1 $2') // camelCase → camel Case
+    .replace(/[_-]/g, ' ') // snake_case / kebab-case → spacje
+    .split(' ') // podział po spacji
+    .filter(Boolean) // usunięcie pustych
+    .map((word) => word.toLowerCase());
 }
 
 module.exports = toWords;
